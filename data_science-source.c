@@ -22,7 +22,7 @@ double compute(double a, double b, double A, double B, double C) {
       y[i] = A * x[i] * x[i] + B * x[i] + C;
    }
 
-
+	
    double xlo = (-B + sqrt(B * B - 4. * A * C)) / (2. * A);
    double xhi = (-B - sqrt(B * B - 4. * A * C)) / (2. * A);
    double xmid = (xlo + xhi) * 0.5;
@@ -66,62 +66,55 @@ double compute(double a, double b, double A, double B, double C) {
 
 
 
-int main(int ARGC, const char** const ARGV) {
+int main(int ARGC, const char** const ARGV)
+{
+	double tolerance = (ARGC > 1) ? atof(ARGV[1]) : 0.;
+	double sgoal = -M_PI;
+	double a, b;
+	const double MAXab = 4e2; // 4 * 10 ^ 2
+
+	printf("== Data Science Academy, Tolerance Level %.17g ==\n\n", tolerance);
+
+	double A = -1. - myrand(); 
+	double B = 2.0 * myrand() - 1.0; B += (B > 0.) ? 2. : -2.;
+	double C = 0.4 + 3.0 * myrand();
+
+	printf("curve parameters:\n");
+	printf("  A=%.17g\n", A);
+	printf("  B=%.17g\n", B);
+	printf("  C=%.17g\n\n", C);
+
+	printf("pick your range [a,b]: ");
+	fflush(stdout);
+
+	scanf("%24lf,%24lf", &a, &b);
+	printf("a=%.17g b=%.17g\n", a, b);
 
 
+	// Check a, b value.
+	// 1. b > a
+	// 2. abs(a) < 400
+	// 3. abs(b) < 400
+	if (b > a && fabs(a) < MAXab && fabs(b) < MAXab) {
+		double s = compute(a, b, A, B, C);
+		printf("\nresult= %.17g\n", s);
 
-   double tolerance = (ARGC > 1) ? atof(ARGV[1]) : 0.;
-
-   printf("== Data Science Academy, Tolerance Level %.17g ==\n\n", tolerance);
-
-
-
-   double A = -1. - myrand(); 
-   double B = 2.0 * myrand() - 1.0;
-   B += (B > 0.) ? 2. : -2.;
-   double C = 0.4 + 3.0 * myrand();
-
-   printf("curve parameters:\n");
-   printf("  A=%.17g\n", A);
-   printf("  B=%.17g\n", B);
-   printf("  C=%.17g\n\n", C);
-
-
-
-   printf("pick your range [a,b]: ");
-   fflush(stdout);
-
-   double a, b;
-   scanf("%24lf,%24lf", &a, &b);
-   printf("a=%.17g b=%.17g\n", a, b);
-
-   //    INPUT VALUE
-   //    a and b are double value
-   /*    b > a
-    *    a [-400;400]
-    *    b [-400;400]
-    */
-
-   const double MAXab = 4e2; // 4 * 10 ^ 2
-
-   if (b > a && fabs(a) < MAXab && fabs(b) < MAXab) {
-      double s = compute(a, b, A, B, C);
-      printf("\nresult= %.17g\n", s);
-
-      double sgoal = -M_PI;
-      if (fabs(s - sgoal) > tolerance) printf("=> NO CIGAR :(, try harder...\n");
-      else {
-         FILE* f = fopen("./flag.txt", "r");
-         char buf[256];
-         fread(buf, 256, 1, f);
-         fclose(f);
-         if (s == sgoal) printf("=> THAT'S IT! Here is the flag: %s\n", buf);
-         else printf("=> GOOD ENOUGH. Here is the flag: %s\n", buf);
-      }     
-   }
-   else printf("invalid input\n");
+		// abs(s + pi) < tolerance
+		// -3 + 3.14
+		// -6 + 3.14
+		if (fabs(s - sgoal) > tolerance) printf("=> NO CIGAR :(, try harder...\n");
+		else {
+			FILE* f = fopen("./flag.txt", "r");
+			char buf[256];
+			fread(buf, 256, 1, f);
+			fclose(f);
+			if (s == sgoal) printf("=> THAT'S IT! Here is the flag: %s\n", buf);
+			else printf("=> GOOD ENOUGH. Here is the flag: %s\n", buf);
+		}	  
+	}
+	else printf("invalid input\n");
 
 
-   fflush(stdout);
-   return 0;
+	fflush(stdout);
+	return 0;
 }
